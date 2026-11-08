@@ -1039,7 +1039,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                           await uiSettingsManager.storage.deleteAll();
                           await repoManager.storage.deleteAll();
                           await uiSettingsManager.reinit();
-                          ref.read(premiumStatusProvider.notifier).set(false);
+                          ref.read(premiumStatusProvider.notifier).set(true);
 
                           Navigator.of(context).canPop() ? Navigator.pop(context) : null;
                         });

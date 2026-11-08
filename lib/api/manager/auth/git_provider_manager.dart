@@ -59,7 +59,7 @@ class GitProviderManager {
   String? get clientSecret => null;
   List<String>? get scopes => null;
 
-  OAuth2Client get oauthClient => GitHubOAuth2Client(redirectUri: 'gitsync://auth', customUriScheme: 'gitsync');
+  OAuth2Client get oauthClient => GitHubOAuth2Client(redirectUri: 'gitsynckaell://auth', customUriScheme: 'gitsynckaell');
 
   Future<String?> getToken(String token, Future<void> Function(String p1, DateTime? p2, String p3) setAccessRefreshToken) async {
     final tokenParts = token.split(conflictSeparator);

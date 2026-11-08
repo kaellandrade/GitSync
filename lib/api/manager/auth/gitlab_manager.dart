@@ -31,8 +31,8 @@ class GitlabManager extends GitProviderManager {
   OAuth2Client get oauthClient => OAuth2Client(
     authorizeUrl: 'https://gitlab.com/oauth/authorize',
     tokenUrl: 'https://gitlab.com/oauth/token',
-    redirectUri: 'gitsync://auth',
-    customUriScheme: 'gitsync',
+    redirectUri: 'gitsynckaell://auth',
+    customUriScheme: 'gitsynckaell',
   );
 
   @override

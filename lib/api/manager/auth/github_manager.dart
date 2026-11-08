@@ -34,7 +34,7 @@ class GithubManager extends GitProviderManager {
   get scopes => ["read:user", "user:email", "repo", "workflow", "read:org"];
   bool get supportsTokenRefresh => false;
 
-  OAuth2Client get oauthClient => GitHubOAuth2Client(redirectUri: 'gitsync://auth', customUriScheme: 'gitsync');
+  OAuth2Client get oauthClient => GitHubOAuth2Client(redirectUri: 'gitsynckaell://auth', customUriScheme: 'gitsynckaell');
 
   @override
   Future<(String, String)?> getUsernameAndEmail(String accessToken) async {

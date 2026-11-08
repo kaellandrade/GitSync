@@ -30,8 +30,8 @@ class GiteaManager extends GitProviderManager {
   OAuth2Client get oauthClient => OAuth2Client(
     authorizeUrl: 'https://$domain/login/oauth/authorize',
     tokenUrl: 'https://$domain/login/oauth/access_token',
-    redirectUri: 'gitsync://auth',
-    customUriScheme: 'gitsync',
+    redirectUri: 'gitsynckaell://auth',
+    customUriScheme: 'gitsynckaell',
   );
 
   @override

@@ -2,6 +2,8 @@ name: Release OSS (APK)
 
 on:
   push:
+    branches:
+      - main
     tags:
       - v*
 
@@ -39,11 +41,29 @@ jobs:
           toolchain: 1.88.0
 
       - name: Create Secrets file
+        env:
+          SECRETS_CONTENT: ${{ secrets.SECRETS }}
+          GH_CLIENT_ID: ${{ secrets.GH_OAUTH_CLIENT_ID }}
+          GH_CLIENT_SECRET: ${{ secrets.GH_OAUTH_CLIENT_SECRET }}
+          GH_APP_CLIENT_ID: ${{ secrets.GH_APP_CLIENT_ID }}
+          GH_APP_CLIENT_SECRET: ${{ secrets.GH_APP_CLIENT_SECRET }}
         run: |
-          echo "Creating file with interpolated secrets"
-          cat <<EOF > ./lib/constant/secrets.dart
-          ${{ secrets.SECRETS }}
+          if [ -n "$SECRETS_CONTENT" ]; then
+            echo "Creating file with full SECRETS secret"
+            printf '%s\n' "$SECRETS_CONTENT" > ./lib/constant/secrets.dart
+          else
+            echo "Generating secrets.dart from individual secrets / template fallback"
+            cat <<EOF > ./lib/constant/secrets.dart
+          const oauthRedirectUrl = "gitsynckaell://auth";
+          const gitHubClientId = "$GH_CLIENT_ID";
+          const gitHubClientSecret = "$GH_CLIENT_SECRET";
+          const gitHubAppClientId = "${GH_APP_CLIENT_ID:-$GH_CLIENT_ID}";
+          const gitHubAppClientSecret = "${GH_APP_CLIENT_SECRET:-$GH_CLIENT_SECRET}";
+          const giteaClientId = "";
+          const gitlabClientId = "";
+          const codebergClientId = "";
           EOF
+          fi
 
       - name: Setup Flutter SDK
         uses: flutter-actions/setup-flutter@v4
@@ -88,15 +108,52 @@ jobs:
           flutter build apk --release --split-per-abi --target-platform="android-arm64"
           flutter build apk --release --split-per-abi --target-platform="android-x64"
 
+      - name: Cache Fallback Keystore
+        uses: actions/cache@v6
+        with:
+          path: ~/.android-signing
+          key: gitsync-fallback-keystore-v1
+
+      - name: Prepare Signing Credentials
+        id: signing_creds
+        env:
+          SECRET_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          SECRET_ALIAS: ${{ secrets.RELEASE_SIGNING_ALIAS }}
+          SECRET_PASSWORD: ${{ secrets.RELEASE_SIGNING_PASSWORD }}
+        run: |
+          if [ -n "$SECRET_KEYSTORE" ] && [ -n "$SECRET_ALIAS" ] && [ -n "$SECRET_PASSWORD" ]; then
+            echo "Using repository signing secrets"
+            echo "keystore_b64=$SECRET_KEYSTORE" >> "$GITHUB_OUTPUT"
+            echo "alias=$SECRET_ALIAS" >> "$GITHUB_OUTPUT"
+            echo "password=$SECRET_PASSWORD" >> "$GITHUB_OUTPUT"
+          else
+            echo "Generating or reusing cached fallback keystore"
+            mkdir -p ~/.android-signing
+            if [ ! -f ~/.android-signing/release.keystore ]; then
+              keytool -genkeypair -v \
+                -keystore ~/.android-signing/release.keystore \
+                -alias gitsync_kaell \
+                -keyalg RSA -keysize 2048 -validity 10000 \
+                -storepass gitsync_kaell_pass \
+                -keypass gitsync_kaell_pass \
+                -dname "CN=Kaell, OU=GitSync, O=Kaell, L=BR, S=BR, C=BR"
+            fi
+            KEYSTORE_B64=$(base64 -w 0 ~/.android-signing/release.keystore)
+            echo "::add-mask::$KEYSTORE_B64"
+            echo "keystore_b64=$KEYSTORE_B64" >> "$GITHUB_OUTPUT"
+            echo "alias=gitsync_kaell" >> "$GITHUB_OUTPUT"
+            echo "password=gitsync_kaell_pass" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Sign App
         id: sign_app
         uses: ilharp/sign-android-release@v2
         with:
           releaseDir: build/app/outputs/flutter-apk/
-          signingKey: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
-          keyAlias: ${{ secrets.RELEASE_SIGNING_ALIAS }}
-          keyStorePassword: ${{ secrets.RELEASE_SIGNING_PASSWORD }}
-          keyPassword: ${{ secrets.RELEASE_SIGNING_PASSWORD }}
+          signingKey: ${{ steps.signing_creds.outputs.keystore_b64 }}
+          keyAlias: ${{ steps.signing_creds.outputs.alias }}
+          keyStorePassword: ${{ steps.signing_creds.outputs.password }}
+          keyPassword: ${{ steps.signing_creds.outputs.password }}
           buildToolsVersion: 34.0.0
 
       - name: Format App List
@@ -117,12 +174,14 @@ jobs:
             !*-release.apk
 
       - uses: jungwinter/split@v2
+        if: startsWith(github.ref, 'refs/tags/v')
         id: signed_files
         with:
           msg: ${{ steps.sign_app.outputs.signedFiles }}
           separator: ":"
 
       - name: Build Changelog
+        if: startsWith(github.ref, 'refs/tags/v')
         id: changelog
         uses: ardalanamini/auto-changelog@v4
         with:
@@ -133,6 +192,7 @@ jobs:
           semver: false
 
       - name: Find and Replace
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: mad9000/actions-find-and-replace-string@5
         id: signed_file_path_0
         with:
@@ -141,6 +201,7 @@ jobs:
           replace: ""
 
       - name: Find and Replace
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: mad9000/actions-find-and-replace-string@5
         id: signed_file_path_1
         with:
@@ -149,6 +210,7 @@ jobs:
           replace: ""
 
       - name: Find and Replace
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: mad9000/actions-find-and-replace-string@5
         id: signed_file_path_2
         with:
@@ -157,6 +219,7 @@ jobs:
           replace: ""
 
       - name: Get Previous Tag
+        if: startsWith(github.ref, 'refs/tags/v')
         id: previous_tag
         env:
           GH_TOKEN: ${{ github.token }}
@@ -165,6 +228,7 @@ jobs:
           echo "previous_tag=$PREVIOUS_TAG" >> "$GITHUB_OUTPUT"
 
       - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/v')
         id: create_release
         uses: ncipollo/release-action@v1.21.0
         with:
