@@ -98,15 +98,11 @@ jobs:
 
       - uses: SimonMarquis/android-accept-licenses@v1
 
-      - name: Build Release APKs
+      - name: Build Release APK (arm64-v8a)
         run: |
           export CARGO_ENCODED_RUSTFLAGS=$(printf '%s\x1f%s\x1f%s' "--remap-path-prefix=$HOME/.cargo/registry/src=/cargo/registry/src" "--remap-path-prefix=$GITHUB_WORKSPACE=." "-Ccodegen-units=1")
           export SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
-          # Build each ABI in its own gradle invocation so the gradle task graph
-          # matches F-Droid (which builds one ABI per metadata entry job).
-          flutter build apk --release --split-per-abi --target-platform="android-arm"
           flutter build apk --release --split-per-abi --target-platform="android-arm64"
-          flutter build apk --release --split-per-abi --target-platform="android-x64"
 
       - name: Cache Fallback Keystore
         uses: actions/cache@v6
@@ -200,24 +196,6 @@ jobs:
           find: "/github/workspace/"
           replace: ""
 
-      - name: Find and Replace
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: mad9000/actions-find-and-replace-string@5
-        id: signed_file_path_1
-        with:
-          source: ${{ steps.signed_files.outputs._1 }}
-          find: "/github/workspace/"
-          replace: ""
-
-      - name: Find and Replace
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: mad9000/actions-find-and-replace-string@5
-        id: signed_file_path_2
-        with:
-          source: ${{ steps.signed_files.outputs._2 }}
-          find: "/github/workspace/"
-          replace: ""
-
       - name: Get Previous Tag
         if: startsWith(github.ref, 'refs/tags/v')
         id: previous_tag
@@ -232,7 +210,7 @@ jobs:
         id: create_release
         uses: ncipollo/release-action@v1.21.0
         with:
-          artifacts: "${{ steps.signed_file_path_0.outputs.value }},${{ steps.signed_file_path_1.outputs.value }},${{ steps.signed_file_path_2.outputs.value }}"
+          artifacts: "${{ steps.signed_file_path_0.outputs.value }}"
           body: ${{ steps.changelog.outputs.changelog }}
           draft: true
           generateReleaseNotes: true
