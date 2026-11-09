@@ -534,7 +534,6 @@ class _ScheduledSyncSettingsState extends State<ScheduledSyncSettings> with Widg
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                  fontFeatures: [FontFeature.enable('smcp')],
                                   color: context.colours.primaryLight,
                                   fontSize: textLG,
                                   fontWeight: FontWeight.bold,

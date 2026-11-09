@@ -111,7 +111,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
         leading: getBackButton(context, () => Navigator.of(context).canPop() ? Navigator.pop(context) : null),
         centerTitle: true,
         title: Text(
-          context.t.globalSettings.toUpperCase(),
+          context.t.globalSettings,
           style: TextStyle(color: context.colours.primaryLight, fontWeight: FontWeight.bold),
         ),
       ),
@@ -401,69 +401,55 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                     SizedBox(height: spaceMD),
                     FutureBuilder(
                       future: repoManager.getBool(StorageKey.repoman_editorLineWrap),
-                      builder: (context, editorLineWrapSnapshot) => TextButton.icon(
-                        onPressed: () async {
-                          await repoManager.setBool(StorageKey.repoman_editorLineWrap, !(editorLineWrapSnapshot.data ?? false));
-                          if (mounted) setState(() {});
-                        },
-                        style: ButtonStyle(
-                          alignment: Alignment.centerLeft,
-                          backgroundColor: WidgetStatePropertyAll(context.colours.tertiaryDark),
-                          padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceMD)),
-                          shape: WidgetStatePropertyAll(
-                            RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusMD), side: BorderSide.none),
+                      builder: (context, editorLineWrapSnapshot) {
+                        final isEnabled = editorLineWrapSnapshot.data == true;
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: context.colours.tertiaryDark,
+                            borderRadius: BorderRadius.all(cornerRadiusMD),
                           ),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          minimumSize: WidgetStatePropertyAll(Size.zero),
-                        ),
-                        iconAlignment: IconAlignment.end,
-                        icon: FaIcon(
-                          editorLineWrapSnapshot.data == true ? FontAwesomeIcons.solidSquareCheck : FontAwesomeIcons.squareCheck,
-                          color: context.colours.primaryPositive,
-                          size: textLG,
-                        ),
-                        label: SizedBox(
-                          width: double.infinity,
-                          child: Text(
-                            context.t.enableLineWrap.toUpperCase(),
-                            style: TextStyle(color: context.colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
+                          child: SwitchListTile.adaptive(
+                            contentPadding: EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceXS),
+                            value: isEnabled,
+                            activeColor: context.colours.primaryPositive,
+                            onChanged: (val) async {
+                              await repoManager.setBool(StorageKey.repoman_editorLineWrap, val);
+                              if (mounted) setState(() {});
+                            },
+                            title: Text(
+                              context.t.enableLineWrap,
+                              style: TextStyle(color: context.colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
+                            ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
                     if (Platform.isAndroid) ...[
                       SizedBox(height: spaceMD),
                       FutureBuilder(
                         future: AccessibilityServiceHelper.isExcludedFromRecents(),
-                        builder: (context, excludedFromRecentsSnapshot) => TextButton.icon(
-                          onPressed: () async {
-                            await AccessibilityServiceHelper.excludeFromRecents(!(excludedFromRecentsSnapshot.data ?? false));
-                            if (mounted) setState(() {});
-                          },
-                          style: ButtonStyle(
-                            alignment: Alignment.centerLeft,
-                            backgroundColor: WidgetStatePropertyAll(context.colours.tertiaryDark),
-                            padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceMD)),
-                            shape: WidgetStatePropertyAll(
-                              RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusMD), side: BorderSide.none),
+                        builder: (context, excludedFromRecentsSnapshot) {
+                          final isEnabled = excludedFromRecentsSnapshot.data == true;
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: context.colours.tertiaryDark,
+                              borderRadius: BorderRadius.all(cornerRadiusMD),
                             ),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            minimumSize: WidgetStatePropertyAll(Size.zero),
-                          ),
-                          iconAlignment: IconAlignment.end,
-                          icon: FaIcon(
-                            excludedFromRecentsSnapshot.data == true ? FontAwesomeIcons.solidSquareCheck : FontAwesomeIcons.squareCheck,
-                            color: context.colours.primaryPositive,
-                            size: textLG,
-                          ),
-                          label: SizedBox(
-                            width: double.infinity,
-                            child: Text(
-                              context.t.excludeFromRecents.toUpperCase(),
-                              style: TextStyle(color: context.colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
+                            child: SwitchListTile.adaptive(
+                              contentPadding: EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceXS),
+                              value: isEnabled,
+                              activeColor: context.colours.primaryPositive,
+                              onChanged: (val) async {
+                                await AccessibilityServiceHelper.excludeFromRecents(val);
+                                if (mounted) setState(() {});
+                              },
+                              title: Text(
+                                context.t.excludeFromRecents,
+                                style: TextStyle(color: context.colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+                        },
                       ),
                     ],
                     SizedBox(height: spaceLG),
@@ -479,7 +465,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                             ),
                           ),
                           Text(
-                            context.t.backupRestoreTitle.toUpperCase(),
+                            context.t.backupRestoreTitle,
                             style: TextStyle(fontSize: textSM, color: context.colours.primaryLight, fontWeight: FontWeight.bold),
                           ),
                           Expanded(
@@ -625,7 +611,7 @@ class _GlobalSettingsMain extends ConsumerState<GlobalSettingsMain> with Widgets
                             ),
                           ),
                           Text(
-                            context.t.repositoryDefaults.toUpperCase(),
+                            context.t.repositoryDefaults,
                             style: TextStyle(fontSize: textSM, color: context.colours.primaryLight, fontWeight: FontWeight.bold),
                           ),
                           Expanded(

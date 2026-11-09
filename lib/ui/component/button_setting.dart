@@ -73,7 +73,7 @@ class _ButtonSettingState extends State<ButtonSetting> {
             label: Padding(
               padding: EdgeInsets.only(left: spaceXS),
               child: Text(
-                widget.text.toUpperCase(),
+                widget.text,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(color: widget.textColor ?? context.colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),
@@ -102,7 +102,7 @@ class _ButtonSettingState extends State<ButtonSetting> {
                       label: Padding(
                         padding: EdgeInsets.only(left: spaceXS),
                         child: Text(
-                          widget.text.toUpperCase(),
+                          widget.text,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(color: widget.textColor ?? context.colours.primaryLight, fontSize: textMD, fontWeight: FontWeight.bold),

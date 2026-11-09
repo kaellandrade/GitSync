@@ -339,7 +339,6 @@ class _AutoSyncSettingsState extends State<AutoSyncSettings> {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                    fontFeatures: [FontFeature.enable('smcp')],
                                     color: context.colours.primaryLight,
                                     fontSize: textLG,
                                     fontWeight: FontWeight.bold,
