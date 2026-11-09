@@ -1924,7 +1924,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
                   onPressed: () => _restorableGlobalSettings.present({}),
                   icon: FaIcon(
                     FontAwesomeIcons.gear,
-                    color: context.colours.tertiaryDark,
+                    color: context.colours.secondaryLight,
                     size: spaceMD + 7,
                     semanticLabel: context.t.globalSettings,
                   ),
@@ -3450,57 +3450,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
                                                     blendMode: BlendMode.dstOut,
                                                     child: SingleChildScrollView(child: ListBody(children: children)),
                                                   ))([
-                                                  ...clientModeEnabledValue == true
-                                                      ? [
-                                                          TextButton.icon(
-                                                            onPressed: () async {
-                                                              _homeNavigatorKey.currentState
-                                                                  ?.push(createSyncSettingsMainRoute())
-                                                                  .then((_) => reloadAll());
-                                                            },
-                                                            iconAlignment: IconAlignment.end,
-                                                            style: ButtonStyle(
-                                                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                              padding: WidgetStatePropertyAll(
-                                                                EdgeInsets.symmetric(horizontal: spaceLG, vertical: spaceMD),
-                                                              ),
-                                                              shape: WidgetStatePropertyAll(
-                                                                RoundedRectangleBorder(
-                                                                  borderRadius: BorderRadius.all(cornerRadiusMD),
-                                                                  side: BorderSide.none,
-                                                                ),
-                                                              ),
-                                                              backgroundColor: WidgetStatePropertyAll(context.colours.secondaryDark),
-                                                            ),
-                                                            icon: FaIcon(
-                                                              FontAwesomeIcons.chevronRight,
-                                                              color: context.colours.secondaryLight,
-                                                              size: textMD,
-                                                            ),
-                                                            label: Row(
-                                                              children: [
-                                                                FaIcon(FontAwesomeIcons.rightLeft, color: context.colours.tertiaryPositive, size: textLG),
-                                                                SizedBox(width: spaceSM),
-                                                                Expanded(
-                                                                  child: Text(
-                                                                    context.t.syncSettings,
-                                                                    style: TextStyle(
-                                                                      fontFeatures: [FontFeature.enable('smcp')],
-                                                                      color: context.colours.primaryLight,
-                                                                      fontSize: textLG,
-                                                                      fontWeight: FontWeight.bold,
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          SizedBox(height: spaceMD),
-                                                        ]
-                                                      : [
-                                                          GroupSyncSettings(),
-                                                          SizedBox(height: spaceMD),
-                                                        ],
                                                   CustomShowcase(
                                                     cornerRadius: cornerRadiusMD,
                                                     globalKey: _configKey,
@@ -4397,6 +4346,57 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
                                                     },
                                                   ),
                                                   SizedBox(height: spaceMD),
+                                                  ...clientModeEnabledValue == true
+                                                      ? [
+                                                          TextButton.icon(
+                                                            onPressed: () async {
+                                                              _homeNavigatorKey.currentState
+                                                                  ?.push(createSyncSettingsMainRoute())
+                                                                  .then((_) => reloadAll());
+                                                            },
+                                                            iconAlignment: IconAlignment.end,
+                                                            style: ButtonStyle(
+                                                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                              padding: WidgetStatePropertyAll(
+                                                                EdgeInsets.symmetric(horizontal: spaceLG, vertical: spaceMD),
+                                                              ),
+                                                              shape: WidgetStatePropertyAll(
+                                                                RoundedRectangleBorder(
+                                                                  borderRadius: BorderRadius.all(cornerRadiusMD),
+                                                                  side: BorderSide.none,
+                                                                ),
+                                                              ),
+                                                              backgroundColor: WidgetStatePropertyAll(context.colours.secondaryDark),
+                                                            ),
+                                                            icon: FaIcon(
+                                                              FontAwesomeIcons.chevronRight,
+                                                              color: context.colours.secondaryLight,
+                                                              size: textMD,
+                                                            ),
+                                                            label: Row(
+                                                              children: [
+                                                                FaIcon(FontAwesomeIcons.rightLeft, color: context.colours.tertiaryPositive, size: textLG),
+                                                                SizedBox(width: spaceSM),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    context.t.syncSettings,
+                                                                    style: TextStyle(
+                                                                      fontFeatures: [FontFeature.enable('smcp')],
+                                                                      color: context.colours.primaryLight,
+                                                                      fontSize: textLG,
+                                                                      fontWeight: FontWeight.bold,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          SizedBox(height: spaceMD),
+                                                        ]
+                                                      : [
+                                                          GroupSyncSettings(),
+                                                          SizedBox(height: spaceMD),
+                                                        ],
                                                 ]),
                                           ),
                                         ),

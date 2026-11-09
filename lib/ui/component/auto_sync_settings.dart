@@ -28,6 +28,16 @@ class _AutoSyncSettingsState extends State<AutoSyncSettings> {
         await uiSettingsManager.getBool(StorageKey.setman_applicationObserverExpanded);
   }
 
+  Future<bool> getIsActive() async {
+    final serviceEnabled = Platform.isIOS || (Platform.isAndroid && await AccessibilityServiceHelper.isAccessibilityServiceEnabled());
+    if (!serviceEnabled) return false;
+    final hasApps = Platform.isIOS || (await uiSettingsManager.getApplicationPackages()).isNotEmpty;
+    if (!hasApps) return false;
+    final onOpen = await uiSettingsManager.getBool(StorageKey.setman_syncOnAppOpened);
+    final onClose = await uiSettingsManager.getBool(StorageKey.setman_syncOnAppClosed);
+    return onOpen || onClose;
+  }
+
   Widget _buildBody(AsyncSnapshot applicationPackagesSnapshot) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,10 +279,11 @@ class _AutoSyncSettingsState extends State<AutoSyncSettings> {
           builder: (BuildContext context, AsyncSnapshot expandedSnapshot) => Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  TextButton.icon(
+              FutureBuilder<bool>(
+                future: getIsActive(),
+                builder: (context, activeSnapshot) {
+                  final isActive = activeSnapshot.data ?? false;
+                  return TextButton.icon(
                     onPressed: () async {
                       final enabled = (expandedSnapshot.data ?? false);
 
@@ -310,10 +321,15 @@ class _AutoSyncSettingsState extends State<AutoSyncSettings> {
                       width: double.infinity,
                       child: Row(
                         children: [
-                          AnimatedSize(
-                            duration: animFast,
-                            child: SizedBox(width: (expandedSnapshot.data ?? false) ? spaceMD + spaceXXS : 0),
+                          Container(
+                            width: spaceXS,
+                            height: spaceXS,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: isActive ? context.colours.primaryPositive : context.colours.tertiaryLight,
+                            ),
                           ),
+                          SizedBox(width: spaceSM),
                           Flexible(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -342,33 +358,8 @@ class _AutoSyncSettingsState extends State<AutoSyncSettings> {
                         ],
                       ),
                     ),
-                  ),
-                  AnimatedPositioned(
-                    duration: animFast,
-                    top: 0,
-                    left: 0,
-                    bottom: 0,
-                    child: (expandedSnapshot.data ?? false)
-                        ? SizedBox(
-                            width: spaceXL,
-                            height: spaceXL,
-                            child: IconButton(
-                              padding: EdgeInsets.zero,
-                              style: ButtonStyle(
-                                tapTargetSize: MaterialTapTargetSize.padded,
-                                shape: WidgetStatePropertyAll(
-                                  RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusMD), side: BorderSide.none),
-                                ),
-                              ),
-                              onPressed: () async {
-                                launchUrl(Uri.parse(autoSyncDocsLink));
-                              },
-                              icon: FaIcon(FontAwesomeIcons.circleQuestion, color: context.colours.primaryLight, size: textLG),
-                            ),
-                          )
-                        : SizedBox.shrink(),
-                  ),
-                ],
+                  );
+                },
               ),
               FutureBuilder(
                 future: uiSettingsManager.getApplicationPackages(),

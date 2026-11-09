@@ -491,10 +491,12 @@ class _ScheduledSyncSettingsState extends State<ScheduledSyncSettings> with Widg
         builder: (context, snapshot) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                TextButton.icon(
+            FutureBuilder<String>(
+              future: uiSettingsManager.getString(StorageKey.setman_schedule),
+              builder: (context, scheduleSnapshot) {
+                final rawSchedule = scheduleSnapshot.data ?? "never|1";
+                final isScheduleActive = rawSchedule.isNotEmpty && !rawSchedule.startsWith("never");
+                return TextButton.icon(
                   onPressed: () async {
                     await uiSettingsManager.setBool(StorageKey.setman_scheduledSyncSettingsExpanded, !(snapshot.data ?? false));
                     setState(() {});
@@ -514,10 +516,15 @@ class _ScheduledSyncSettingsState extends State<ScheduledSyncSettings> with Widg
                     width: double.infinity,
                     child: Row(
                       children: [
-                        AnimatedSize(
-                          duration: animFast,
-                          child: SizedBox(width: (snapshot.data ?? false) ? spaceMD + spaceXXS : 0),
+                        Container(
+                          width: spaceXS,
+                          height: spaceXS,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: isScheduleActive ? context.colours.primaryPositive : context.colours.tertiaryLight,
+                          ),
                         ),
+                        SizedBox(width: spaceSM),
                         Flexible(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -546,33 +553,8 @@ class _ScheduledSyncSettingsState extends State<ScheduledSyncSettings> with Widg
                       ],
                     ),
                   ),
-                ),
-                AnimatedPositioned(
-                  duration: animFast,
-                  top: 0,
-                  left: 0,
-                  bottom: 0,
-                  child: (snapshot.data ?? false)
-                      ? SizedBox(
-                          height: spaceXL,
-                          width: spaceXL,
-                          child: IconButton(
-                            padding: EdgeInsets.zero,
-                            style: ButtonStyle(
-                              tapTargetSize: MaterialTapTargetSize.padded,
-                              shape: WidgetStatePropertyAll(
-                                RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusMD), side: BorderSide.none),
-                              ),
-                            ),
-                            onPressed: () async {
-                              launchUrl(Uri.parse(scheduledSyncDocsLink));
-                            },
-                            icon: FaIcon(FontAwesomeIcons.circleQuestion, color: context.colours.primaryLight, size: textLG),
-                          ),
-                        )
-                      : SizedBox.shrink(),
-                ),
-              ],
+                );
+              },
             ),
             AnimatedSize(
               duration: animFast,

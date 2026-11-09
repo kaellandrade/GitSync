@@ -233,88 +233,54 @@ class _QuickSyncSettingsState extends State<QuickSyncSettings> {
         builder: (context, snapshot) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                TextButton.icon(
-                  onPressed: () async {
-                    uiSettingsManager.setBool(StorageKey.setman_otherSyncSettingsExpanded, !(snapshot.data ?? false));
-                    setState(() {});
-                  },
-                  iconAlignment: IconAlignment.end,
-                  style: ButtonStyle(
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: spaceLG, vertical: spaceMD)),
-                    shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusMD), side: BorderSide.none)),
-                  ),
-                  icon: FaIcon(
-                    (snapshot.data ?? false) ? FontAwesomeIcons.chevronUp : FontAwesomeIcons.chevronDown,
-                    color: context.colours.primaryLight,
-                    size: textXL,
-                  ),
-                  label: SizedBox(
-                    width: double.infinity,
-                    child: Row(
-                      children: [
-                        AnimatedSize(
-                          duration: animFast,
-                          child: SizedBox(width: (snapshot.data ?? false) ? spaceMD + spaceXXS : 0),
-                        ),
-                        Flexible(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                context.t.quickSyncSettings,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontFeatures: [FontFeature.enable('smcp')],
-                                  color: context.colours.primaryLight,
-                                  fontSize: textLG,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              if (snapshot.data == true) ...[
-                                SizedBox(height: spaceXXXXS),
-                                Text(
-                                  context.t.quickSyncDescription,
-                                  style: TextStyle(color: context.colours.secondaryLight, fontSize: textMD),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                AnimatedPositioned(
-                  duration: animFast,
-                  top: 0,
-                  left: 0,
-                  bottom: 0,
-                  child: (snapshot.data ?? false)
-                      ? SizedBox(
-                          height: spaceXL,
-                          width: spaceXL,
-                          child: IconButton(
-                            padding: EdgeInsets.zero,
-                            style: ButtonStyle(
-                              tapTargetSize: MaterialTapTargetSize.padded,
-                              shape: WidgetStatePropertyAll(
-                                RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusMD), side: BorderSide.none),
-                              ),
+            TextButton.icon(
+              onPressed: () async {
+                uiSettingsManager.setBool(StorageKey.setman_otherSyncSettingsExpanded, !(snapshot.data ?? false));
+                setState(() {});
+              },
+              iconAlignment: IconAlignment.end,
+              style: ButtonStyle(
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: spaceLG, vertical: spaceMD)),
+                shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusMD), side: BorderSide.none)),
+              ),
+              icon: FaIcon(
+                (snapshot.data ?? false) ? FontAwesomeIcons.chevronUp : FontAwesomeIcons.chevronDown,
+                color: context.colours.primaryLight,
+                size: textXL,
+              ),
+              label: SizedBox(
+                width: double.infinity,
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            context.t.quickSyncSettings,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFeatures: [FontFeature.enable('smcp')],
+                              color: context.colours.primaryLight,
+                              fontSize: textLG,
+                              fontWeight: FontWeight.bold,
                             ),
-                            onPressed: () async {
-                              launchUrl(Uri.parse(quickSyncDocsLink));
-                            },
-                            icon: FaIcon(FontAwesomeIcons.circleQuestion, color: context.colours.primaryLight, size: textLG),
                           ),
-                        )
-                      : SizedBox.shrink(),
+                          if (snapshot.data == true) ...[
+                            SizedBox(height: spaceXXXXS),
+                            Text(
+                              context.t.quickSyncDescription,
+                              style: TextStyle(color: context.colours.secondaryLight, fontSize: textMD),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
             AnimatedSize(
               duration: animFast,
