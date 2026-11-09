@@ -75,28 +75,28 @@ class AppLocalizationsPt extends AppLocalizations {
   String get android => 'Android';
 
   @override
-  String get syncStarting => 'Detectando alterações…';
+  String get syncStarting => 'Verificando alterações…';
 
   @override
-  String get syncStartPull => 'Sincronizando alterações…';
+  String get syncStartPull => 'Baixando alterações remotas…';
 
   @override
-  String get syncStartPush => 'Sincronizando alterações locais…';
+  String get syncStartPush => 'Enviando alterações locais…';
 
   @override
-  String get syncNotRequired => 'Sincronização não necessária!';
+  String get syncNotRequired => 'Tudo atualizado!';
 
   @override
-  String get syncComplete => 'Repositório sincronizado!';
+  String get syncComplete => 'Cofre sincronizado com sucesso!';
 
   @override
-  String get syncInProgress => 'Sincronização em Andamento';
+  String get syncInProgress => 'Sincronizando…';
 
   @override
   String get syncScheduled => 'Sincronização Agendada';
 
   @override
-  String get detectingChanges => 'Detectando Alterações…';
+  String get detectingChanges => 'Verificando alterações…';
 
   @override
   String get thisActionCannotBeUndone => 'Esta ação não pode ser desfeita.';
@@ -232,84 +232,84 @@ class AppLocalizationsPt extends AppLocalizations {
   String get premiumIndieDevSubtitle => 'GitSync is an independent project, not a company. Buying Premium pays for the time that goes into it.';
 
   @override
-  String get switchToClientMode => 'Mudar para Modo Cliente…';
+  String get switchToClientMode => 'Alternar para Modo Git Avançado…';
 
   @override
-  String get switchToSyncMode => 'Mudar para Sync Mode…';
+  String get switchToSyncMode => 'Alternar para Modo Automático…';
 
   @override
   String get defaultTo => 'Definir como padrão';
 
   @override
-  String get clientMode => 'Modo Cliente';
+  String get clientMode => 'Modo Avançado';
 
   @override
-  String get clientModeDescription => 'Git UI expandida\n(Avançado)';
+  String get clientModeDescription => 'Controle Git detalhado\n(Pull, Push e Commit separados)';
 
   @override
-  String get syncMode => 'Sync Mode';
+  String get syncMode => 'Modo Automático';
 
   @override
-  String get syncModeDescription => 'Sincronização automática\n(Ideal para iniciantes)';
+  String get syncModeDescription => 'Sincronização em 1 toque\n(Ideal para Obsidian)';
 
   @override
-  String get syncNow => 'Sync Alterações';
+  String get syncNow => 'Sincronizar Agora';
 
   @override
-  String get syncAllChanges => 'Sync Todas as Alterações';
+  String get syncAllChanges => 'Sincronizar Tudo';
 
   @override
-  String get stageAndCommit => 'Preparar & Commit';
+  String get stageAndCommit => 'Commit Manual';
 
   @override
-  String get downloadChanges => 'Baixar Alterações';
+  String get downloadChanges => 'Baixar (Pull)';
 
   @override
-  String get uploadChanges => 'Enviar Alterações';
+  String get uploadChanges => 'Enviar (Push)';
 
   @override
-  String get downloadAndOverwrite => 'Baixar + Substituir';
+  String get downloadAndOverwrite => 'Forçar Pull (Sobrescrever Local)';
 
   @override
-  String get uploadAndOverwrite => 'Enviar + Substituir';
+  String get uploadAndOverwrite => 'Forçar Push (Sobrescrever Remoto)';
 
   @override
   String get fetchRemote => 'Buscar %s';
 
   @override
-  String get pullChanges => 'Pull Changes';
+  String get pullChanges => 'Baixar (Pull)';
 
   @override
-  String get pushChanges => 'Push Changes';
+  String get pushChanges => 'Enviar (Push)';
 
   @override
-  String get updateSubmodules => 'Atualizar Submodules';
+  String get updateSubmodules => 'Atualizar Submódulos';
 
   @override
-  String get forcePush => 'Force Push';
+  String get forcePush => 'Forçar Push';
 
   @override
-  String get forcePushing => 'Executando force push…';
+  String get forcePushing => 'Executando Force Push…';
 
   @override
   String get confirmForcePush => 'Confirmar Force Push';
 
   @override
   String get confirmForcePushMsg =>
-      'Tem certeza de que deseja executar force push nestas alterações? Quaisquer merge conflicts em andamento serão abortados.';
+      'Tem certeza de que deseja forçar o envio (Force Push) destas alterações? Conflitos de merge em andamento serão abortados.';
 
   @override
-  String get forcePull => 'Force Pull';
+  String get forcePull => 'Forçar Pull';
 
   @override
-  String get forcePulling => 'Executando force pull…';
+  String get forcePulling => 'Executando Force Pull…';
 
   @override
   String get confirmForcePull => 'Confirmar Force Pull';
 
   @override
   String get confirmForcePullMsg =>
-      'Tem certeza de que deseja executar force pull nestas alterações? Quaisquer merge conflicts em andamento serão ignorados.';
+      'Tem certeza de que deseja forçar o download (Force Pull) destas alterações? Alterações locais conflitantes serão sobrescritas.';
 
   @override
   String get localHistoryOverwriteWarning => 'Esta ação sobrescreverá o histórico local e não pode ser desfeita.';
@@ -318,19 +318,19 @@ class AppLocalizationsPt extends AppLocalizations {
   String get forcePushPullMessage => 'Por favor, não feche ou saia do app até que o processo seja concluído.';
 
   @override
-  String get manualSync => 'Sync Manual';
+  String get manualSync => 'Commit Manual';
 
   @override
-  String get manualSyncMsg => 'Selecione os arquivos que deseja sincronizar';
+  String get manualSyncMsg => 'Selecione os arquivos que deseja incluir no commit';
 
   @override
-  String get commit => 'Commit';
+  String get commit => 'Confirmar Commit';
 
   @override
-  String get unstage => 'Remover preparação';
+  String get unstage => 'Desmarcar';
 
   @override
-  String get stage => 'Preparar';
+  String get stage => 'Marcar';
 
   @override
   String get selectAll => 'Selecionar Tudo';
@@ -339,7 +339,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get deselectAll => 'Desmarcar Tudo';
 
   @override
-  String get noUncommittedChanges => 'Nenhuma alteração pendente de commit';
+  String get noUncommittedChanges => 'Nenhuma alteração pendente';
 
   @override
   String get discardChanges => 'Descartar Alterações';
@@ -351,19 +351,19 @@ class AppLocalizationsPt extends AppLocalizations {
   String get discardChangesMsg => 'Tem certeza de que deseja descartar todas as alterações em \"%s\"?';
 
   @override
-  String get mergeConflictItemMessage => 'Há um merge conflict! Toque para resolver';
+  String get mergeConflictItemMessage => 'Conflito de merge detectado! Toque para resolver';
 
   @override
-  String get mergeConflict => 'Merge Conflict';
+  String get mergeConflict => 'Conflito de Merge';
 
   @override
-  String get mergeDialogMessage => 'Use o editor para resolver os merge conflicts';
+  String get mergeDialogMessage => 'Resolva os conflitos de merge abaixo';
 
   @override
-  String get commitMessage => 'Commit Message';
+  String get commitMessage => 'Mensagem do Commit';
 
   @override
-  String get abortMerge => 'Abortar Merge';
+  String get abortMerge => 'Cancelar Merge';
 
   @override
   String get resolveLater => 'Resolver Depois';
@@ -378,19 +378,19 @@ class AppLocalizationsPt extends AppLocalizations {
   String get both => 'Ambos';
 
   @override
-  String get remote => 'Remote';
+  String get remote => 'Remoto';
 
   @override
   String get incoming => 'Recebida';
 
   @override
-  String get merge => 'Merge';
+  String get merge => 'Mesclar (Merge)';
 
   @override
   String get resolve => 'Resolver';
 
   @override
-  String get merging => 'Fazendo merge…';
+  String get merging => 'Mesclando alterações…';
 
   @override
   String get resolving => 'Resolvendo…';
@@ -829,10 +829,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get filesNotFound => 'No files found…';
 
   @override
-  String get repoNotFound => 'Nenhum repositório…';
+  String get repoNotFound => 'Nenhuma pasta selecionada…';
 
   @override
-  String get committed => 'realizou commit';
+  String get committed => 'fez commit';
 
   @override
   String get additions => '%s ++';
@@ -856,32 +856,32 @@ class AppLocalizationsPt extends AppLocalizations {
   String get launchInBrowser => 'Abrir no Navegador';
 
   @override
-  String get auth => 'AUTH';
+  String get auth => 'CONTA';
 
   @override
-  String get openFileExplorer => 'Navegar e Editar';
+  String get openFileExplorer => 'Arquivos do Cofre';
 
   @override
-  String get syncSettings => 'Config. de Sync';
+  String get syncSettings => 'Automação de Sincronização';
 
   @override
-  String get enableApplicationObserver => 'Config. de Sync do App';
+  String get enableApplicationObserver => 'Sincronizar ao Abrir/Fechar App';
 
   @override
-  String get appSyncDescription => 'Sincroniza automaticamente quando seu app selecionado é aberto ou fechado';
+  String get appSyncDescription => 'Sincroniza automaticamente ao abrir ou fechar o Obsidian (ou outro app selecionado)';
 
   @override
-  String get appSyncIosDescription => 'Sincroniza automaticamente quando o GitSync é aberto ou fechado';
+  String get appSyncIosDescription => 'Sincroniza automaticamente quando o KGit é aberto ou fechado';
 
   @override
   String get iosAppSyncDocsLinkText => 'Sincronizar quando outros apps são abertos/fechados';
 
   @override
-  String get accessibilityServiceDisclosureTitle => 'Divulgação do Serviço de Acessibilidade';
+  String get accessibilityServiceDisclosureTitle => 'Permissão de Acessibilidade';
 
   @override
   String get accessibilityServiceDisclosureMessage =>
-      'Para aprimorar sua experiência,\no GitSync usa o Serviço de Acessibilidade do Android para detectar quando apps são abertos ou fechados.\n\nIsso nos ajuda a oferecer recursos personalizados sem armazenar ou compartilhar nenhum dado.\n\nᴘᴏʀ ғᴀᴠᴏʀ, ᴀᴛɪᴠᴇ ᴏ ɢɪᴛsʏɴᴄ ɴᴀ ᴘʀóxɪᴍᴀ ᴛᴇʟᴀ';
+      'Para detectar quando você abre ou fecha o Obsidian,\no KGit utiliza o Serviço de Acessibilidade do Android.\n\nNenhum dado pessoal ou conteúdo de tela é coletado ou enviado.\n\nATIVE O KGIT NA PRÓXIMA TELA';
 
   @override
   String get search => 'Pesquisar';
@@ -890,7 +890,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get searchEllipsis => 'Pesquisar…';
 
   @override
-  String get applicationNotSet => 'Selecionar App(s)';
+  String get applicationNotSet => 'Selecionar App (ex: Obsidian)';
 
   @override
   String get selectApplication => 'Selecionar aplicativo(s)';
@@ -902,22 +902,22 @@ class AppLocalizationsPt extends AppLocalizations {
   String get saveApplication => 'Salvar';
 
   @override
-  String get syncOnAppClosed => 'Sincronizar ao fechar app(s)';
+  String get syncOnAppClosed => 'Sincronizar ao fechar o app';
 
   @override
-  String get syncOnAppOpened => 'Sincronizar ao abrir app(s)';
+  String get syncOnAppOpened => 'Sincronizar ao abrir o app';
 
   @override
-  String get iosSyncOnAppClosed => 'Sincronizar ao fechar GitSync';
+  String get iosSyncOnAppClosed => 'Sincronizar ao fechar o KGit';
 
   @override
-  String get iosSyncOnAppOpened => 'Sincronizar ao abrir GitSync';
+  String get iosSyncOnAppOpened => 'Sincronizar ao abrir o KGit';
 
   @override
-  String get scheduledSyncSettings => 'Config. Sync Agendada';
+  String get scheduledSyncSettings => 'Sincronização Automática (Timer)';
 
   @override
-  String get scheduledSyncDescription => 'Sincroniza automaticamente periodicamente em segundo plano';
+  String get scheduledSyncDescription => 'Sincroniza automaticamente em segundo plano no intervalo escolhido';
 
   @override
   String get tabHome => 'Início';
@@ -971,31 +971,31 @@ class AppLocalizationsPt extends AppLocalizations {
   String get enhancedScheduledSync => 'Sincronização Agendada Aprimorada';
 
   @override
-  String get quickSyncSettings => 'Config. Sync Rápida';
+  String get quickSyncSettings => 'Atalhos e Widgets';
 
   @override
-  String get quickSyncDescription => 'Sincronize usando quick tiles, atalhos ou widgets personalizáveis';
+  String get quickSyncDescription => 'Sincronize rapidamente usando botões na barra de status, atalhos ou widgets';
 
   @override
-  String get otherSyncSettings => 'Outras Config. de Sync';
+  String get otherSyncSettings => 'Outras Opções de Sincronização';
 
   @override
-  String get useForTileSync => 'Usar no Tile de Sync';
+  String get useForTileSync => 'Usar no Botão Rápido (Sincronizar)';
 
   @override
-  String get useForTileManualSync => 'Usar para Tile de Sincronização Manual';
+  String get useForTileManualSync => 'Usar no Botão Rápido (Commit Manual)';
 
   @override
-  String get useForShortcutSync => 'Usar para Atalho de Sincronização';
+  String get useForShortcutSync => 'Usar no Atalho do App (Sincronizar)';
 
   @override
-  String get useForShortcutManualSync => 'Usar para Atalho de Sincronização Manual';
+  String get useForShortcutManualSync => 'Usar no Atalho do App (Commit Manual)';
 
   @override
-  String get useForWidgetSync => 'Usar no Widget de Sync';
+  String get useForWidgetSync => 'Usar no Widget (Sincronizar)';
 
   @override
-  String get useForWidgetManualSync => 'Usar para Widget de Sincronização Manual';
+  String get useForWidgetManualSync => 'Usar no Widget (Commit Manual)';
 
   @override
   String get remoteAuthMismatchTitle => 'A autenticação não funcionará com este remote';
@@ -1208,34 +1208,34 @@ class AppLocalizationsPt extends AppLocalizations {
   String get useSshKey => 'Usar Chave de AUTH para Assinatura de Commits';
 
   @override
-  String get syncMessageLabel => 'Mensagem de Sync';
+  String get syncMessageLabel => 'Mensagem de Commit Automático';
 
   @override
-  String get defaultSyncMessageLabel => 'Mensagem de Sincronização Padrão';
+  String get defaultSyncMessageLabel => 'Mensagem de Commit Padrão';
 
   @override
-  String get syncMessageDescription => 'use %s para data e hora';
+  String get syncMessageDescription => 'use %s para inserir data e hora';
 
   @override
-  String get syncMessageTimeFormatLabel => 'Formato de Hora da Mensagem de Sincronização';
+  String get syncMessageTimeFormatLabel => 'Formato de Data/Hora do Commit';
 
   @override
-  String get defaultSyncMessageTimeFormatLabel => 'Formato de Hora Padrão da Mensagem de Sincronização';
+  String get defaultSyncMessageTimeFormatLabel => 'Formato de Data/Hora Padrão';
 
   @override
   String get syncMessageTimeFormatDescription => 'usa sintaxe padrão de formatação de data/hora';
 
   @override
-  String get remoteLabel => 'remote padrão';
+  String get remoteLabel => 'Remoto Padrão';
 
   @override
   String get defaultRemote => 'origin';
 
   @override
-  String get authorNameLabel => 'nome do autor';
+  String get authorNameLabel => 'Nome do Autor';
 
   @override
-  String get defaultAuthorNameLabel => 'nome do autor padrão';
+  String get defaultAuthorNameLabel => 'Nome do Autor Padrão';
 
   @override
   String get authorNameDescription => 'usado para identificá-lo no histórico de commits';
@@ -1244,10 +1244,10 @@ class AppLocalizationsPt extends AppLocalizations {
   String get authorName => 'JoaoSilva12';
 
   @override
-  String get authorEmailLabel => 'e-mail do autor';
+  String get authorEmailLabel => 'E-mail do Autor';
 
   @override
-  String get defaultAuthorEmailLabel => 'e-mail do autor padrão';
+  String get defaultAuthorEmailLabel => 'E-mail do Autor Padrão';
 
   @override
   String get authorEmailDescription => 'anexado aos seus commits para atribuição';
@@ -1256,7 +1256,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get authorEmail => 'joao12@silva.com';
 
   @override
-  String get postFooterLabel => 'rodapé de postagem';
+  String get postFooterLabel => 'Assinatura / Rodapé';
 
   @override
   String get postFooterDescription => 'anexado ao final de issues, comentários e pull requests que você criar';
@@ -1327,22 +1327,22 @@ class AppLocalizationsPt extends AppLocalizations {
   String get language => 'Idioma';
 
   @override
-  String get browseEditDir => 'Navegar e Editar Diretório';
+  String get browseEditDir => 'Explorar Pasta Externa';
 
   @override
-  String get enableLineWrap => 'Ativar Quebra de Linha nos Editores';
+  String get enableLineWrap => 'Quebra de Linha Automática no Editor';
 
   @override
-  String get excludeFromRecents => 'Excluir de Recentes';
+  String get excludeFromRecents => 'Ocultar KGit dos Apps Recentes';
 
   @override
-  String get backupRestoreTitle => 'Recuperação de Configuração Criptografada';
+  String get backupRestoreTitle => 'Backup e Restauração';
 
   @override
-  String get encryptedBackup => 'Backup Criptografado';
+  String get encryptedBackup => 'Exportar Backup Criptografado';
 
   @override
-  String get encryptedRestore => 'Restauração Criptografada';
+  String get encryptedRestore => 'Restaurar Backup Criptografado';
 
   @override
   String get backup => 'Backup';
@@ -1424,13 +1424,13 @@ class AppLocalizationsPt extends AppLocalizations {
   String get shareLogs => 'Compartilhar Logs';
 
   @override
-  String get logsEmailSubjectTemplate => 'Logs do GitSync (%s)';
+  String get logsEmailSubjectTemplate => 'Logs do KGit (%s)';
 
   @override
   String get logsEmailRecipient => 'bugsviscouspotential@gmail.com';
 
   @override
-  String get repositoryDefaults => 'Padrões de Repositório';
+  String get repositoryDefaults => 'Padrões para Novos Cofres';
 
   @override
   String get miscellaneous => 'Diversos';
@@ -1445,7 +1445,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get folder => 'Pasta';
 
   @override
-  String get directory => 'Diretório';
+  String get directory => 'Pasta do Cofre';
 
   @override
   String get confirmFileDirDeleteTitle => 'Confirm Deletion';
@@ -1575,34 +1575,34 @@ class AppLocalizationsPt extends AppLocalizations {
   String get defaultContainerName => 'alias';
 
   @override
-  String get renameRepository => 'Renomear Container';
+  String get renameRepository => 'Renomear Cofre / Repositório';
 
   @override
-  String get renameRepositoryMsg => 'Digite um novo alias para o container do repositório';
+  String get renameRepositoryMsg => 'Digite um novo nome para identificar este cofre/repositório';
 
   @override
-  String get addMore => 'Adicionar Mais';
+  String get addMore => 'Novo';
 
   @override
-  String get addRepository => 'Adicionar Container';
+  String get addRepository => 'Adicionar Cofre / Repositório';
 
   @override
-  String get addRepositoryMsg => 'Dê ao seu novo container de repositório um alias exclusivo. Isso ajudará você a identificá-lo depois.';
+  String get addRepositoryMsg => 'Escolha um nome para identificar este novo cofre ou repositório.';
 
   @override
-  String get confirmRepositoryDelete => 'Confirmar Exclusão do Container';
+  String get confirmRepositoryDelete => 'Remover Cofre do App';
 
   @override
-  String get confirmRepositoryDeleteMsg => 'Tem certeza de que deseja excluir o container do repositório \"%s\"?';
+  String get confirmRepositoryDeleteMsg => 'Tem certeza de que deseja remover o cofre "%s" da lista?';
 
   @override
-  String get deleteRepoDirectoryCheckbox => 'Também excluir o diretório do repositório e todo o seu conteúdo';
+  String get deleteRepoDirectoryCheckbox => 'Excluir também a pasta local e todos os seus arquivos do aparelho';
 
   @override
-  String get confirmRepositoryDeleteTitle => 'Confirmar Exclusão do Container';
+  String get confirmRepositoryDeleteTitle => 'Confirmar Exclusão';
 
   @override
-  String get confirmRepositoryDeleteMessage => 'Tem certeza de que deseja excluir o repositório \"%s\" e seu conteúdo?';
+  String get confirmRepositoryDeleteMessage => 'Tem certeza de que deseja excluir permanentemente a pasta "%s" e todo o seu conteúdo?';
 
   @override
   String get submodulesFoundTitle => 'Submodules Encontrados';
@@ -2020,7 +2020,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get networkStallRetry => 'Rede instável — tentará novamente em breve';
 
   @override
-  String get networkUnavailableRetry => 'Rede indisponível!\nO GitSync tentará novamente quando reconectar';
+  String get networkUnavailableRetry => 'Sem conexão!\nO KGit tentará novamente assim que reconectar';
 
   @override
   String get networkStallManual => 'Rede instável — por favor, tente novamente';
@@ -2036,7 +2036,7 @@ class AppLocalizationsPt extends AppLocalizations {
       'Não foi possível alcançar o servidor. Verifique sua conexão com a internet ou confirme se a URL do repositório está correta.';
 
   @override
-  String get pullFailed => 'Pull falhou! Por favor, verifique se há alterações não commitadas e tente novamente.';
+  String get pullFailed => 'Falha ao baixar alterações! Verifique se há alterações locais pendentes e tente novamente.';
 
   @override
   String get reportABug => 'Relatar um Bug';
@@ -2212,13 +2212,13 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get githubScopedLoginMsg =>
-      'Você será redirecionado para o GitHub para entrar.\n\nFaça login com a conta que tem acesso aos seus repositórios e, em seguida, autorize o GitSync.';
+      'Você será redirecionado ao GitHub para entrar.\n\nFaça login com sua conta e autorize o KGit.';
 
   @override
   String get githubScopedRepoTitle => 'Etapa 2: Selecionar Repositórios';
 
   @override
-  String get githubScopedRepoMsg => 'Escolha quais repositórios o GitSync pode acessar.\n\nQuando terminar, feche o navegador para retornar ao app.';
+  String get githubScopedRepoMsg => 'Escolha quais repositórios o KGit pode acessar.\n\nQuando terminar, volte para o aplicativo.';
 
   @override
   String get issueDescription => 'Descrição';
@@ -2441,7 +2441,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get chatComingSoonSubtitle => 'Interaja com seus arquivos usando Claude Code';
 
   @override
-  String get noRepoSetup => 'Configure um repositório primeiro';
+  String get noRepoSetup => 'Selecione a pasta do seu cofre primeiro';
 
   @override
   String get enableAiFeatures => 'Ativar Recursos de IA';

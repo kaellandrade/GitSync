@@ -13,7 +13,7 @@ enum StorageKey<T> {
   repoman_shortcutManualSyncIndex<int>(name: "shortcutManualSyncIndex", defaultValue: 0),
   repoman_widgetSyncIndex<int>(name: "widgetSyncIndex", defaultValue: 0),
   repoman_widgetManualSyncIndex<int>(name: "widgetManualSyncIndex", defaultValue: 0),
-  repoman_onboardingStep<int>(name: "onboardingStep", defaultValue: 0),
+  repoman_onboardingStep<int>(name: "onboardingStep", defaultValue: -1),
   repoman_erroring<String?>(name: "erroring", defaultValue: null),
   repoman_ghSponsorToken<String?>(name: "ghSponsorToken", defaultValue: null),
   repoman_repoNames<List<String>>(name: "repoNames", defaultValue: <String>["default"]),
@@ -34,7 +34,7 @@ enum StorageKey<T> {
   repoman_aiChatModel<String?>(name: "aiChatModel", defaultValue: null),
   repoman_aiToolModel<String?>(name: "aiToolModel", defaultValue: null),
   repoman_aiWandModel<String?>(name: "aiWandModel", defaultValue: null),
-  repoman_aiFeaturesEnabled<bool>(name: "aiFeaturesEnabled", defaultValue: true),
+  repoman_aiFeaturesEnabled<bool>(name: "aiFeaturesEnabled", defaultValue: false),
 
   // Settings Manager
   setman_authorName<String?>(name: "authorName", defaultValue: "", hasDefault: true),
@@ -77,7 +77,7 @@ enum StorageKey<T> {
   setman_disableSsl<bool>(name: "disableSsl", defaultValue: false),
   setman_submodulePaths<List<String>>(name: "submodulePaths", defaultValue: []),
   setman_hasGitFilters<bool>(name: "hasGitFilters", defaultValue: false),
-  setman_pinnedShowcaseFeatures<List<String>>(name: "pinnedShowcaseFeatures", defaultValue: ["issues", "pull_requests"]);
+  setman_pinnedShowcaseFeatures<List<String>>(name: "pinnedShowcaseFeatures", defaultValue: []);
 
   const StorageKey({required this.name, required this.defaultValue, this.hasDefault = false});
   final T defaultValue;

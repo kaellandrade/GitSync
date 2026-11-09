@@ -24,7 +24,7 @@ enum ShowcaseFeature {
     ShowcaseFeature.actions => context.t.actions,
   };
 
-  static const defaultPinned = [ShowcaseFeature.issues, ShowcaseFeature.pullRequests];
+  static const defaultPinned = <ShowcaseFeature>[];
 
   static ShowcaseFeature? fromStorageKey(String key) {
     for (final feature in ShowcaseFeature.values) {

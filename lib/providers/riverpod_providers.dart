@@ -580,11 +580,10 @@ final gitDirPathProvider = AsyncNotifierProvider<GitDirPathNotifier, (String, St
 
 class AiFeaturesEnabledNotifier extends AsyncNotifier<bool> {
   @override
-  Future<bool> build() => repoManager.getBool(StorageKey.repoman_aiFeaturesEnabled);
+  Future<bool> build() async => false;
 
   void set(bool value) {
-    state = AsyncData(value);
-    repoManager.setBool(StorageKey.repoman_aiFeaturesEnabled, value);
+    state = const AsyncData(false);
   }
 }
 

@@ -20,34 +20,6 @@ class GroupSyncSettings extends StatelessWidget {
         ScheduledSyncSettings(),
         SizedBox(height: spaceMD),
         QuickSyncSettings(),
-        SizedBox(height: spaceMD),
-        TextButton.icon(
-          onPressed: () async {
-            launchUrl(Uri.parse(syncOptionsDocsLink));
-          },
-          iconAlignment: IconAlignment.end,
-          style: ButtonStyle(
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: spaceLG, vertical: spaceMD)),
-            shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(cornerRadiusMD), side: BorderSide.none)),
-            backgroundColor: WidgetStatePropertyAll(context.colours.secondaryDark),
-          ),
-          icon: FaIcon(FontAwesomeIcons.squareArrowUpRight, color: context.colours.primaryLight, size: textXL),
-          label: SizedBox(
-            width: double.infinity,
-            child: Text(
-              context.t.otherSyncSettings,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontFeatures: [FontFeature.enable('smcp')],
-                color: context.colours.primaryLight,
-                fontSize: textLG,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
       ],
     );
   }

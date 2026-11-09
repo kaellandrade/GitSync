@@ -1,5 +1,5 @@
 // App Name
-const String appName = "GitSync";
+const String appName = "KGit";
 
 // Routes
 const String settings_main = "/settings_main";

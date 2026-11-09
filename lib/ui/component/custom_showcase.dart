@@ -88,48 +88,7 @@ class CustomShowcase extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (richContent != null) {
-      return Showcase.withWidget(
-        key: globalKey,
-        targetBorderRadius: cornerRadius == null ? null : BorderRadius.all(cornerRadius!),
-        targetPadding: targetPadding ?? EdgeInsets.all(spaceSM),
-        overlayOpacity: 0.85,
-        tooltipActionConfig: TooltipActionConfig(alignment: MainAxisAlignment.end, actionGap: spaceXS, gapBetweenContentAndAction: spaceMD),
-        tooltipActions: _buildTooltipActions(context),
-        height: richContentHeight ?? 280,
-        width: richContentWidth ?? MediaQuery.of(context).size.width - (spaceLG * 2),
-        container: richContent!,
-        child: child,
-      );
-    }
-
-    return Showcase(
-      key: globalKey,
-      targetBorderRadius: cornerRadius == null ? null : BorderRadius.all(cornerRadius!),
-      title: title,
-      titleTextStyle: TextStyle(
-        fontSize: textXL,
-        fontWeight: FontWeight.bold,
-        color: context.colours.showcaseTitle,
-        fontFamily: 'AtkinsonHyperlegible',
-      ),
-      description: description,
-      descTextStyle: TextStyle(
-        fontSize: textSM,
-        fontWeight: FontWeight.bold,
-        color: context.colours.showcaseDesc,
-        fontFamily: 'AtkinsonHyperlegible',
-      ),
-      targetPadding: targetPadding ?? EdgeInsets.all(spaceSM),
-      tooltipBackgroundColor: context.colours.showcaseBg,
-      textColor: context.colours.showcaseTitle,
-      tooltipBorderRadius: BorderRadius.all(cornerRadiusMD),
-      tooltipPadding: EdgeInsets.all(spaceMD),
-      overlayOpacity: 0.85,
-      tooltipActionConfig: TooltipActionConfig(alignment: MainAxisAlignment.end, actionGap: spaceXS, gapBetweenContentAndAction: spaceMD),
-      tooltipActions: _buildTooltipActions(context),
-      child: child,
-    );
+    return child;
   }
 }
 

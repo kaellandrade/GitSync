@@ -854,6 +854,7 @@ class MyHomePage extends ConsumerStatefulWidget {
 
 class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObserver, RestorationMixin, TickerProviderStateMixin {
   bool repoSettingsExpanded = false;
+  bool? _repoConfigExpanded;
   bool demoConflicting = false;
 
   bool devTools = false;
@@ -1139,10 +1140,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
 
   @override
   void initState() {
-    final aiEnabled = ref.read(aiFeaturesEnabledProvider).valueOrNull ?? true;
-    final homeIndex = aiEnabled ? 1 : 0;
-    _tabIndex = ValueNotifier(homeIndex);
-    _pageController = PageController(initialPage: homeIndex);
+    _tabIndex = ValueNotifier(0);
+    _pageController = PageController(initialPage: 0);
     AccessibilityServiceHelper.init(context, (fn) => mounted ? setState(fn) : null);
     WidgetsBinding.instance.addObserver(this);
 
@@ -1250,33 +1249,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
       }
     });
 
-    initAsync(() async {
-      final provider = await repoManager.getStringNullable(StorageKey.repoman_aiProvider);
-      final apiKey = await repoManager.getStringNullable(StorageKey.repoman_aiApiKey);
-      aiKeyConfigured.value = provider != null && provider.isNotEmpty && apiKey != null && apiKey.isNotEmpty;
-    });
-
-    switchToAiTab = () {
-      if (!(ref.read(aiFeaturesEnabledProvider).valueOrNull ?? true)) return;
-      Navigator.of(context).popUntil((route) => route.isFirst);
-      _homeNavigatorKey.currentState?.popUntil((route) => route.isFirst);
-      _tabIndex.value = 0;
-      _pageController.animateToPage(0, duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
-    };
-
-    initAsync(() async {
-      if (premiumManager.hasPremiumNotifier.value == false) {
-        await premiumManager.cullNonPremium();
-        await reloadAll();
-      }
-    });
-
-    premiumManager.hasPremiumNotifier.addListener(() async {
-      if (premiumManager.hasPremiumNotifier.value == false && await premiumManager.cullNonPremium()) {
-        await reloadAll();
-      }
-    });
-
     FlutterBackgroundService().on(GitsyncService.MERGE_COMPLETE).listen((event) async {
       Navigator.of(context).canPop() ? Navigator.pop(context) : null;
       await reloadAll();
@@ -1292,27 +1264,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
 
     initAsync(() async {
       await promptClearKeychainValues();
-
-      if (await repoManager.hasLegacySettings()) {
-        if (!mounted) return;
-
-        _restorableOnboardingSetup.present({"legacy": true});
-        return;
-      }
-      final step = await repoManager.getInt(StorageKey.repoman_onboardingStep);
-      if (step != -1 && step != 5) {
-        final gitDirPath = await uiSettingsManager.getString(StorageKey.setman_gitDirPath);
-        if (gitDirPath.isNotEmpty) {
-          await repoManager.setOnboardingStep(-1);
-          return;
-        }
-      }
-
-      if (step == 5) {
-        _triggerUiGuideShowcase();
-      } else if (step != -1) {
-        _restorableOnboardingSetup.present({});
-      }
+      await repoManager.setOnboardingStep(-1);
     });
 
     super.initState();
@@ -1856,11 +1808,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
             ),
           );
         }
-        final aiEnabled = ref.watch(aiFeaturesEnabledProvider).valueOrNull ?? true;
         void goToHomeTab() {
-          final homeIndex = aiEnabled ? 1 : 0;
-          _tabIndex.value = homeIndex;
-          _pageController.animateToPage(homeIndex, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+          _tabIndex.value = 0;
+          _pageController.animateToPage(0, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
         }
 
         return ValueListenableBuilder(
@@ -1868,7 +1818,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
           builder: (context, currentTab, child) => ValueListenableBuilder(
             valueListenable: _filesCanPop,
             builder: (context, canPop, child) => PopScope(
-              canPop: currentTab != (aiEnabled ? 2 : 1) && !canPop,
+              canPop: currentTab != 1 && !canPop,
               onPopInvokedWithResult: (didPop, _) {
                 if (didPop) return;
                 if (_filesNavigatorKey.currentState?.canPop() ?? false) {
@@ -1906,28 +1856,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
         Logger.notifClicked = false;
         Logger.dismissError(context);
       }
-    });
-
-    ref.listen(aiFeaturesEnabledProvider, (prev, next) {
-      final enabled = next.valueOrNull;
-      if (enabled == null) return;
-      final oldIndex = _tabIndex.value;
-      if ((prev == null || prev.valueOrNull == null) && enabled) return;
-      final int newIndex;
-      if (enabled) {
-        newIndex = oldIndex + 1;
-      } else {
-        newIndex = oldIndex == 0 ? 0 : oldIndex - 1;
-      }
-      if (newIndex != oldIndex) {
-        _tabIndex.value = newIndex;
-      }
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted || !_pageController.hasClients) return;
-        if ((_pageController.page ?? _pageController.initialPage.toDouble()).round() != newIndex) {
-          _pageController.jumpToPage(newIndex);
-        }
-      });
     });
 
     return Stack(
@@ -2241,37 +2169,17 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
           ),
           body: Consumer(
             builder: (context, ref, _) {
-              final aiEnabled = ref.watch(aiFeaturesEnabledProvider).valueOrNull ?? true;
               return PageView(
                 controller: _pageController,
                 onPageChanged: (page) {
                   _tabIndex.value = page;
-                  final homeIndex = aiEnabled ? 1 : 0;
-                  if (page == homeIndex) reloadAll();
-                  final filesIndex = aiEnabled ? 2 : 1;
-                  if (page == filesIndex) {
+                  if (page == 0) reloadAll();
+                  if (page == 1) {
                     _fileExplorerKey.currentState?.reload();
                     _fileExplorerKey.currentState?.reloadOpenFile();
                   }
                 },
                 children: [
-                  if (aiEnabled)
-                    _KeepAlivePage(
-                      child: ValueListenableBuilder(
-                        valueListenable: _tabIndex,
-                        builder: (context, currentTab, child) => PopScope(
-                          canPop: currentTab != 0,
-                          onPopInvokedWithResult: (didPop, _) {
-                            if (!didPop) {
-                              _tabIndex.value = 1;
-                              _pageController.animateToPage(1, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
-                            }
-                          },
-                          child: child!,
-                        ),
-                        child: AiFeaturesPage(),
-                      ),
-                    ),
                   _KeepAlivePage(
                     child: ValueListenableBuilder(
                       valueListenable: _homeCanPop,
@@ -2982,7 +2890,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
                                                                                           style: ButtonStyle(
                                                                                             alignment: Alignment.centerLeft,
                                                                                             backgroundColor: WidgetStatePropertyAll(
-                                                                                              context.colours.secondaryDark,
+                                                                                              gitDirPath?.$2 == null
+                                                                                                  ? context.colours.secondaryDark
+                                                                                                  : context.colours.tertiaryPositive,
                                                                                             ),
                                                                                             padding: WidgetStatePropertyAll(
                                                                                               EdgeInsets.symmetric(horizontal: spaceMD),
@@ -3022,7 +2932,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
                                                                                                   provider: recommendedActionProvider,
                                                                                                   builder: (context, value) => value.isLoading
                                                                                                       ? CircularProgressIndicator(
-                                                                                                          color: context.colours.tertiaryDark,
+                                                                                                          color: context.colours.primaryDark,
                                                                                                         )
                                                                                                       : SizedBox.shrink(),
                                                                                                 ),
@@ -3044,7 +2954,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
                                                                                                               FontAwesomeIcons.solidCircleDown,
                                                                                                     color: gitDirPath?.$2 == null
                                                                                                         ? context.colours.secondaryLight
-                                                                                                        : context.colours.primaryLight,
+                                                                                                        : context.colours.primaryDark,
                                                                                                     size: textLG,
                                                                                                   ),
                                                                                                 ),
@@ -3072,12 +2982,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
                                                                                               style: TextStyle(
                                                                                                 color: gitDirPath?.$2 == null
                                                                                                     ? context.colours.secondaryLight
-                                                                                                    : (recommendedActionValue != null &&
-                                                                                                              recommendedActionValue >= 0
-                                                                                                          ? context.colours.tertiaryInfo
-                                                                                                          : context.colours.primaryLight),
+                                                                                                    : context.colours.primaryDark,
                                                                                                 fontSize: textMD,
-                                                                                                fontWeight: FontWeight.bold,
+                                                                                                fontWeight: FontWeight.w900,
                                                                                               ),
                                                                                             ),
                                                                                           ),
@@ -3130,7 +3037,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
 
                                                                                           style: ButtonStyle(
                                                                                             backgroundColor: WidgetStatePropertyAll(
-                                                                                              context.colours.secondaryDark,
+                                                                                              gitDirPath?.$2 == null
+                                                                                                  ? context.colours.secondaryDark
+                                                                                                  : context.colours.tertiaryDark,
                                                                                             ),
                                                                                             padding: WidgetStatePropertyAll(
                                                                                               EdgeInsets.symmetric(
@@ -3354,6 +3263,155 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
                                                                                   .toList(),
                                                                             ),
                                                                           ),
+                                                                          if (gitDirPath?.$2 != null) ...[
+                                                                            SizedBox(height: spaceSM),
+                                                                            IntrinsicHeight(
+                                                                              child: Row(
+                                                                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                                                children: [
+                                                                                  if ((remotesAsync.valueOrNull ?? []).isNotEmpty) ...[
+                                                                                    Expanded(
+                                                                                      child: TextButton.icon(
+                                                                                        onPressed: () async {
+                                                                                          final pullKey = clientModeEnabledValue == true
+                                                                                              ? context.t.pullChanges
+                                                                                              : context.t.downloadChanges;
+                                                                                          final fn = syncOptionsSnapshot[pullKey]?.$2;
+                                                                                          if (fn != null) await fn();
+                                                                                        },
+                                                                                        style: ButtonStyle(
+                                                                                          backgroundColor: WidgetStatePropertyAll(
+                                                                                            context.colours.secondaryDark,
+                                                                                          ),
+                                                                                          padding: WidgetStatePropertyAll(
+                                                                                            EdgeInsets.symmetric(
+                                                                                              horizontal: spaceSM,
+                                                                                              vertical: spaceSM,
+                                                                                            ),
+                                                                                          ),
+                                                                                          shape: WidgetStatePropertyAll(
+                                                                                            RoundedRectangleBorder(
+                                                                                              borderRadius: BorderRadius.all(cornerRadiusSM),
+                                                                                              side: BorderSide(
+                                                                                                color: context.colours.tertiaryDark,
+                                                                                              ),
+                                                                                            ),
+                                                                                          ),
+                                                                                        ),
+                                                                                        icon: FaIcon(
+                                                                                          FontAwesomeIcons.angleDown,
+                                                                                          color: context.colours.tertiaryInfo,
+                                                                                          size: textMD,
+                                                                                        ),
+                                                                                        label: Text(
+                                                                                          context.t.pullChanges.toUpperCase(),
+                                                                                          maxLines: 1,
+                                                                                          overflow: TextOverflow.ellipsis,
+                                                                                          style: TextStyle(
+                                                                                            color: context.colours.primaryLight,
+                                                                                            fontSize: textXS,
+                                                                                            fontWeight: FontWeight.bold,
+                                                                                          ),
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                    SizedBox(width: spaceXS),
+                                                                                    Expanded(
+                                                                                      child: TextButton.icon(
+                                                                                        onPressed: () async {
+                                                                                          final pushKey = clientModeEnabledValue == true
+                                                                                              ? context.t.pushChanges
+                                                                                              : context.t.uploadChanges;
+                                                                                          final fn = syncOptionsSnapshot[pushKey]?.$2;
+                                                                                          if (fn != null) await fn();
+                                                                                        },
+                                                                                        style: ButtonStyle(
+                                                                                          backgroundColor: WidgetStatePropertyAll(
+                                                                                            context.colours.secondaryDark,
+                                                                                          ),
+                                                                                          padding: WidgetStatePropertyAll(
+                                                                                            EdgeInsets.symmetric(
+                                                                                              horizontal: spaceSM,
+                                                                                              vertical: spaceSM,
+                                                                                            ),
+                                                                                          ),
+                                                                                          shape: WidgetStatePropertyAll(
+                                                                                            RoundedRectangleBorder(
+                                                                                              borderRadius: BorderRadius.all(cornerRadiusSM),
+                                                                                              side: BorderSide(
+                                                                                                color: context.colours.tertiaryDark,
+                                                                                              ),
+                                                                                            ),
+                                                                                          ),
+                                                                                        ),
+                                                                                        icon: FaIcon(
+                                                                                          FontAwesomeIcons.angleUp,
+                                                                                          color: context.colours.primaryPositive,
+                                                                                          size: textMD,
+                                                                                        ),
+                                                                                        label: Text(
+                                                                                          context.t.pushChanges.toUpperCase(),
+                                                                                          maxLines: 1,
+                                                                                          overflow: TextOverflow.ellipsis,
+                                                                                          style: TextStyle(
+                                                                                            color: context.colours.primaryLight,
+                                                                                            fontSize: textXS,
+                                                                                            fontWeight: FontWeight.bold,
+                                                                                          ),
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                    SizedBox(width: spaceXS),
+                                                                                  ],
+                                                                                  Expanded(
+                                                                                    child: TextButton.icon(
+                                                                                      onPressed: () async {
+                                                                                        final commitKey = clientModeEnabledValue == true
+                                                                                            ? context.t.stageAndCommit
+                                                                                            : context.t.manualSync;
+                                                                                        final fn = syncOptionsSnapshot[commitKey]?.$2;
+                                                                                        if (fn != null) await fn();
+                                                                                      },
+                                                                                      style: ButtonStyle(
+                                                                                        backgroundColor: WidgetStatePropertyAll(
+                                                                                          context.colours.secondaryDark,
+                                                                                        ),
+                                                                                        padding: WidgetStatePropertyAll(
+                                                                                          EdgeInsets.symmetric(
+                                                                                            horizontal: spaceSM,
+                                                                                            vertical: spaceSM,
+                                                                                          ),
+                                                                                        ),
+                                                                                        shape: WidgetStatePropertyAll(
+                                                                                          RoundedRectangleBorder(
+                                                                                            borderRadius: BorderRadius.all(cornerRadiusSM),
+                                                                                            side: BorderSide(
+                                                                                              color: context.colours.tertiaryDark,
+                                                                                            ),
+                                                                                          ),
+                                                                                        ),
+                                                                                      ),
+                                                                                      icon: FaIcon(
+                                                                                        FontAwesomeIcons.barsStaggered,
+                                                                                        color: context.colours.tertiaryPositive,
+                                                                                        size: textMD,
+                                                                                      ),
+                                                                                      label: Text(
+                                                                                        context.t.manualSync.toUpperCase(),
+                                                                                        maxLines: 1,
+                                                                                        overflow: TextOverflow.ellipsis,
+                                                                                        style: TextStyle(
+                                                                                          color: context.colours.primaryLight,
+                                                                                          fontSize: textXS,
+                                                                                          fontWeight: FontWeight.bold,
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ),
+                                                                                ],
+                                                                              ),
+                                                                            ),
+                                                                          ],
                                                                         ],
                                                                       );
                                                                     },
@@ -3392,6 +3450,57 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
                                                     blendMode: BlendMode.dstOut,
                                                     child: SingleChildScrollView(child: ListBody(children: children)),
                                                   ))([
+                                                  ...clientModeEnabledValue == true
+                                                      ? [
+                                                          TextButton.icon(
+                                                            onPressed: () async {
+                                                              _homeNavigatorKey.currentState
+                                                                  ?.push(createSyncSettingsMainRoute())
+                                                                  .then((_) => reloadAll());
+                                                            },
+                                                            iconAlignment: IconAlignment.end,
+                                                            style: ButtonStyle(
+                                                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                              padding: WidgetStatePropertyAll(
+                                                                EdgeInsets.symmetric(horizontal: spaceLG, vertical: spaceMD),
+                                                              ),
+                                                              shape: WidgetStatePropertyAll(
+                                                                RoundedRectangleBorder(
+                                                                  borderRadius: BorderRadius.all(cornerRadiusMD),
+                                                                  side: BorderSide.none,
+                                                                ),
+                                                              ),
+                                                              backgroundColor: WidgetStatePropertyAll(context.colours.secondaryDark),
+                                                            ),
+                                                            icon: FaIcon(
+                                                              FontAwesomeIcons.chevronRight,
+                                                              color: context.colours.secondaryLight,
+                                                              size: textMD,
+                                                            ),
+                                                            label: Row(
+                                                              children: [
+                                                                FaIcon(FontAwesomeIcons.rightLeft, color: context.colours.tertiaryPositive, size: textLG),
+                                                                SizedBox(width: spaceSM),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    context.t.syncSettings,
+                                                                    style: TextStyle(
+                                                                      fontFeatures: [FontFeature.enable('smcp')],
+                                                                      color: context.colours.primaryLight,
+                                                                      fontSize: textLG,
+                                                                      fontWeight: FontWeight.bold,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          SizedBox(height: spaceMD),
+                                                        ]
+                                                      : [
+                                                          GroupSyncSettings(),
+                                                          SizedBox(height: spaceMD),
+                                                        ],
                                                   CustomShowcase(
                                                     cornerRadius: cornerRadiusMD,
                                                     globalKey: _configKey,
@@ -3410,8 +3519,65 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
                                                       provider: gitDirPathProvider,
                                                       builder: (context, gitDirPathAsync) {
                                                         final gitDirPath = gitDirPathAsync.valueOrNull;
+                                                        final isConfigured = gitDirPath?.$2 != null && isAuthenticatedAsync.valueOrNull == true;
+                                                        final isConfigOpen = !isConfigured || (_repoConfigExpanded ?? false);
+                                                        final folderDisplay = gitDirPath?.$2 == null
+                                                            ? context.t.repoNotFound
+                                                            : gitDirPath!.$2.split("/").last;
                                                         return Column(
                                                           children: [
+                                                            if (isConfigured)
+                                                              Padding(
+                                                                padding: EdgeInsets.only(bottom: isConfigOpen ? spaceSM : 0),
+                                                                child: TextButton(
+                                                                  onPressed: () {
+                                                                    setState(() {
+                                                                      _repoConfigExpanded = !isConfigOpen;
+                                                                    });
+                                                                  },
+                                                                  style: ButtonStyle(
+                                                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                                    padding: WidgetStatePropertyAll(
+                                                                      EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceSM),
+                                                                    ),
+                                                                    backgroundColor: WidgetStatePropertyAll(context.colours.secondaryDark),
+                                                                    shape: WidgetStatePropertyAll(
+                                                                      RoundedRectangleBorder(
+                                                                        borderRadius: BorderRadius.all(cornerRadiusMD),
+                                                                        side: BorderSide(color: context.colours.tertiaryDark),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  child: Row(
+                                                                    children: [
+                                                                      FaIcon(
+                                                                        FontAwesomeIcons.solidCircleCheck,
+                                                                        color: context.colours.primaryPositive,
+                                                                        size: textMD,
+                                                                      ),
+                                                                      SizedBox(width: spaceSM),
+                                                                      Expanded(
+                                                                        child: Text(
+                                                                          "${context.t.directory.toUpperCase()} · $folderDisplay",
+                                                                          maxLines: 1,
+                                                                          overflow: TextOverflow.ellipsis,
+                                                                          style: TextStyle(
+                                                                            color: context.colours.secondaryLight,
+                                                                            fontSize: textSM,
+                                                                            fontWeight: FontWeight.bold,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      FaIcon(
+                                                                        isConfigOpen ? FontAwesomeIcons.chevronUp : FontAwesomeIcons.chevronDown,
+                                                                        color: context.colours.secondaryLight,
+                                                                        size: textSM,
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            if (isConfigOpen) ...[
                                                             IntrinsicHeight(
                                                               child: Row(
                                                                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -4158,6 +4324,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
                                                                 ],
                                                               ),
                                                             ),
+                                                            ],
                                                           ],
                                                         );
                                                       },
@@ -4229,114 +4396,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
                                                       );
                                                     },
                                                   ),
-
-                                                  SizedBox(height: spaceLG),
-                                                  ...clientModeEnabledValue == true
-                                                      ? [
-                                                          TextButton.icon(
-                                                            onPressed: () async {
-                                                              _homeNavigatorKey.currentState
-                                                                  ?.push(createSyncSettingsMainRoute())
-                                                                  .then((_) => reloadAll());
-                                                            },
-                                                            iconAlignment: IconAlignment.end,
-                                                            style: ButtonStyle(
-                                                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                                              padding: WidgetStatePropertyAll(
-                                                                EdgeInsets.symmetric(horizontal: spaceLG, vertical: spaceMD),
-                                                              ),
-                                                              shape: WidgetStatePropertyAll(
-                                                                RoundedRectangleBorder(
-                                                                  borderRadius: BorderRadius.all(cornerRadiusMD),
-                                                                  side: BorderSide.none,
-                                                                ),
-                                                              ),
-                                                              backgroundColor: WidgetStatePropertyAll(context.colours.secondaryDark),
-                                                            ),
-                                                            icon: IconButton(
-                                                              padding: EdgeInsets.zero,
-                                                              style: ButtonStyle(tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                                                              constraints: BoxConstraints(),
-                                                              onPressed: () async {
-                                                                launchUrl(Uri.parse(syncOptionsDocsLink));
-                                                              },
-                                                              icon: FaIcon(
-                                                                FontAwesomeIcons.circleQuestion,
-                                                                color: context.colours.primaryLight,
-                                                                size: textLG,
-                                                              ),
-                                                            ),
-                                                            label: Row(
-                                                              children: [
-                                                                FaIcon(FontAwesomeIcons.rightLeft, color: context.colours.primaryLight, size: textLG),
-                                                                SizedBox(width: spaceSM),
-                                                                Expanded(
-                                                                  child: Text(
-                                                                    context.t.syncSettings,
-                                                                    style: TextStyle(
-                                                                      fontFeatures: [FontFeature.enable('smcp')],
-                                                                      color: context.colours.primaryLight,
-                                                                      fontSize: textLG,
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          SizedBox(height: spaceMD),
-                                                        ]
-                                                      : [
-                                                          CustomShowcase(
-                                                            globalKey: _autoSyncOptionsKey,
-                                                            cornerRadius: cornerRadiusMD,
-                                                            richContent: ShowcaseTooltipContent(
-                                                              title: context.t.showcaseAutoSyncTitle,
-                                                              subtitle: context.t.showcaseAutoSyncSubtitle,
-                                                              featureRows: [
-                                                                ShowcaseFeatureRow(
-                                                                  icon: FontAwesomeIcons.solidBell,
-                                                                  text: context.t.showcaseAutoSyncFeatureApp,
-                                                                ),
-                                                                ShowcaseFeatureRow(
-                                                                  icon: FontAwesomeIcons.clockRotateLeft,
-                                                                  text: context.t.showcaseAutoSyncFeatureSchedule,
-                                                                ),
-                                                                ShowcaseFeatureRow(
-                                                                  icon: FontAwesomeIcons.barsStaggered,
-                                                                  text: context.t.showcaseAutoSyncFeatureQuick,
-                                                                ),
-                                                                ShowcaseFeatureRow(
-                                                                  icon: FontAwesomeIcons.solidGem,
-                                                                  text: context.t.showcaseAutoSyncFeaturePremium,
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            targetPadding: EdgeInsets.all(spaceSM),
-                                                            customTooltipActions: [
-                                                              TooltipActionButton(
-                                                                backgroundColor: context.colours.secondaryInfo,
-                                                                textStyle: TextStyle(
-                                                                  fontWeight: FontWeight.bold,
-                                                                  fontSize: textSM,
-                                                                  color: context.colours.primaryLight,
-                                                                ),
-                                                                leadIcon: ActionButtonIcon(
-                                                                  icon: FaIcon(
-                                                                    FontAwesomeIcons.solidFileLines,
-                                                                    color: context.colours.primaryLight,
-                                                                    size: textSM,
-                                                                  ),
-                                                                ),
-                                                                name: context.t.learnMore.toUpperCase(),
-                                                                onTap: () => launchUrl(Uri.parse(syncOptionsBGDocsLink)),
-                                                                type: null,
-                                                                borderRadius: BorderRadius.all(cornerRadiusMD),
-                                                                padding: EdgeInsets.symmetric(horizontal: spaceMD, vertical: spaceXS),
-                                                              ),
-                                                            ],
-                                                            child: GroupSyncSettings(),
-                                                          ),
-                                                        ],
                                                   SizedBox(height: spaceMD),
                                                 ]),
                                           ),
@@ -4362,7 +4421,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
             children: [
               Consumer(
                 builder: (context, ref, _) {
-                  final aiEnabled = ref.watch(aiFeaturesEnabledProvider).valueOrNull ?? true;
                   return ValueListenableBuilder(
                     valueListenable: _tabIndex,
                     builder: (context, currentTabIndex, _) => Theme(
@@ -4370,33 +4428,22 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
                         navigationBarTheme: NavigationBarThemeData(
                           labelTextStyle: WidgetStateProperty.resolveWith((states) {
                             if (states.contains(WidgetState.selected)) {
-                              return TextStyle(color: context.colours.tertiaryInfo, fontSize: textXS, fontWeight: FontWeight.bold);
+                              return TextStyle(color: context.colours.tertiaryPositive, fontSize: textXS, fontWeight: FontWeight.bold);
                             }
                             return TextStyle(color: context.colours.secondaryLight, fontSize: textXS);
                           }),
                         ),
                       ),
                       child: NavigationBar(
-                        selectedIndex: currentTabIndex.clamp(0, aiEnabled ? 2 : 1),
+                        selectedIndex: currentTabIndex.clamp(0, 1),
                         onDestinationSelected: (i) {
-                          if (aiEnabled) {
-                            if (i == 1 && _tabIndex.value == 1) {
-                              _homeNavigatorKey.currentState?.popUntil((route) => route.isFirst);
-                            } else if (i == 2 && _tabIndex.value == 2) {
-                              _filesNavigatorKey.currentState?.popUntil((route) => route.isFirst);
-                            } else {
-                              _tabIndex.value = i;
-                              _pageController.animateToPage(i, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
-                            }
+                          if (i == 0 && _tabIndex.value == 0) {
+                            _homeNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+                          } else if (i == 1 && _tabIndex.value == 1) {
+                            _filesNavigatorKey.currentState?.popUntil((route) => route.isFirst);
                           } else {
-                            if (i == 0 && _tabIndex.value == 0) {
-                              _homeNavigatorKey.currentState?.popUntil((route) => route.isFirst);
-                            } else if (i == 1 && _tabIndex.value == 1) {
-                              _filesNavigatorKey.currentState?.popUntil((route) => route.isFirst);
-                            } else {
-                              _tabIndex.value = i;
-                              _pageController.animateToPage(i, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
-                            }
+                            _tabIndex.value = i;
+                            _pageController.animateToPage(i, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
                           }
                         },
                         backgroundColor: context.colours.secondaryDark,
@@ -4405,20 +4452,14 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
                         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
                         height: 64,
                         destinations: [
-                          if (aiEnabled)
-                            NavigationDestination(
-                              icon: FaIcon(FontAwesomeIcons.wandMagicSparkles, color: context.colours.secondaryLight, size: textLG),
-                              selectedIcon: FaIcon(FontAwesomeIcons.wandMagicSparkles, color: context.colours.tertiaryInfo, size: textLG),
-                              label: context.t.tabChat,
-                            ),
                           NavigationDestination(
                             icon: FaIcon(FontAwesomeIcons.codeBranch, color: context.colours.secondaryLight, size: textLG),
-                            selectedIcon: FaIcon(FontAwesomeIcons.codeBranch, color: context.colours.tertiaryInfo, size: textLG),
+                            selectedIcon: FaIcon(FontAwesomeIcons.codeBranch, color: context.colours.tertiaryPositive, size: textLG),
                             label: context.t.tabHome,
                           ),
                           NavigationDestination(
                             icon: FaIcon(FontAwesomeIcons.solidFolderOpen, color: context.colours.secondaryLight, size: textLG),
-                            selectedIcon: FaIcon(FontAwesomeIcons.solidFolderOpen, color: context.colours.tertiaryInfo, size: textLG),
+                            selectedIcon: FaIcon(FontAwesomeIcons.solidFolderOpen, color: context.colours.tertiaryPositive, size: textLG),
                             label: context.t.tabFiles,
                           ),
                         ],
@@ -4426,33 +4467,6 @@ class _MyHomePageState extends ConsumerState<MyHomePage> with WidgetsBindingObse
                     ),
                   );
                 },
-              ),
-              ProviderBuilder<bool>(
-                provider: hasGitFiltersProvider,
-                builder: (context, hasFiltersAsync) => !(hasFiltersAsync.valueOrNull ?? false)
-                    ? SizedBox.shrink()
-                    : GestureDetector(
-                        onTap: () => launchUrl(Uri.parse(playStoreLink)),
-                        child: Container(
-                          decoration: BoxDecoration(color: context.colours.tertiaryInfo),
-                          padding: EdgeInsets.symmetric(vertical: spaceXXS, horizontal: spaceSM),
-                          child: Center(
-                            child: Text.rich(
-                              textAlign: TextAlign.center,
-                              TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: context.t.unsupportedGitAttributes,
-                                    style: TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  TextSpan(text: " "),
-                                  TextSpan(text: context.t.tapToOpenPlayStore),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
               ),
               FutureBuilder(
                 future: hasNetworkConnection(),
